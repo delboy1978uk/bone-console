@@ -19,7 +19,7 @@ if (!file_exists('vendor/autoload.php')) {
 
 require_once 'vendor/autoload.php';
 
-use Bone\ConsoleApplication;
+use Bone\Console\ConsoleApplication;
 
 $container = Bone\Application::ahoy()->bootstrap();
 $app = $container->get(ConsoleApplication::class);

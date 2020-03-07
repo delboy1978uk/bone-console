@@ -3,7 +3,7 @@
 namespace Bone\Console;
 
 use Barnacle\Container;
-use Bone\ConsoleApplication;
+use Bone\Console\ConsoleApplication;
 
 interface CommandRegistrationInterface
 {
