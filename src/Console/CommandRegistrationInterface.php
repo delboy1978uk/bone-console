@@ -8,8 +8,8 @@ use Bone\Console\ConsoleApplication;
 interface CommandRegistrationInterface
 {
     /**
-     * @param ConsoleApplication $app
-     * @return ConsoleApplication
+     * @param Container $container
+     * @return array
      */
-    public function addToConsole(ConsoleApplication $app, Container $container): ConsoleApplication;
+    public function registerConsoleCommands(Container $container): array;
 }
