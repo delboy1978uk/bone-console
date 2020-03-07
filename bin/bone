@@ -17,11 +17,16 @@ if (!file_exists('vendor/autoload.php')) {
     );
 }
 
-require_once 'vendor/autoload.php';
+$composer = require_once 'vendor/autoload.php';
 
 use Bone\Console\ConsoleApplication;
+use Del\Booty\BootyCommand;
 
 $container = Bone\Application::ahoy()->bootstrap();
+/** @var ConsoleApplication $app */
 $app = $container->get(ConsoleApplication::class);
-
+$packages = $container->get('packages');
+$booty = new BootyCommand('assets', $packages, $composer);
+$booty->setName('assets:deploy');
+$app->add($booty);
 $app->run();
