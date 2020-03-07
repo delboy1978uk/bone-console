@@ -16,11 +16,15 @@ use Bone\Console\CommandRegistrationInterface;
 
 class MyPackage extends RegistrationInterface implements CommandRegistrationInterface
 {
+    /**
+     * @param Container $container
+     * @return array
+     */
     public function registerConsoleCommands(Container $container) : array
     {
         $someDependency = $container->get(Some::class);
-        $awesomeCommand = new MyAwesomeCommand();
-        $differentCommand = new MyAwesomeCommand($someDependency);
+        $awesomeCommand = new AwesomeCommand();
+        $differentCommand = new DifferentCommand($someDependency);
 
         return [
             $awesomeCommand,
