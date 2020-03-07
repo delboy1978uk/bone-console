@@ -1,0 +1,27 @@
+#!/usr/bin/env php
+<?php
+
+$projectRoot = dirname(dirname(dirname(dirname(__DIR__)))) . '';
+chdir($projectRoot);
+
+
+if (!defined('APPLICATION_ENV') && getenv('APPLICATION_ENV')) {
+    define('APPLICATION_ENV', (getenv('APPLICATION_ENV')
+        ? getenv('APPLICATION_ENV')
+        : 'production'));
+}
+
+if (!file_exists('vendor/autoload.php')) {
+    throw new RuntimeException(
+        'Garrrr! Unable t\'load Bone. Run `composer install` or `php composer.phar install`'
+    );
+}
+
+require_once 'vendor/autoload.php';
+
+use Bone\ConsoleApplication;
+
+$container = Bone\Application::ahoy()->bootstrap();
+$app = $container->get(ConsoleApplication::class);
+
+$app->run();
