@@ -9,9 +9,12 @@
         }
     ],
     "require": {
+        "php": ">7.1",
+        "delboy1978uk/barnacle": "^2.3",
         "delboy1978uk/booty": "^1.0"
     },
     "require-dev": {
+        "codeception/codeception": "^2.2",
         "roave/security-advisories": "dev-master"
     },
     "bin": [
@@ -20,6 +23,11 @@
     "autoload": {
         "psr-4": {
             "Bone\\Console\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "BoneTest\\": "tests/unit/"
         }
     }
 }

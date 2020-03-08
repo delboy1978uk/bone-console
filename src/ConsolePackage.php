@@ -12,21 +12,12 @@ class ConsolePackage implements RegistrationInterface
      */
     public function addToContainer(Container $c)
     {
-    }
+        $c[ConsoleApplication::class] = $c->factory(function(Container $c) {
+            $app = new ConsoleApplication();
+            $consoleCommands = $c->get('consoleCommands');
+            $app->addCommands($consoleCommands);
 
-    /**
-     * @return string
-     */
-    public function getEntityPath(): string
-    {
-        return '';
-    }
-
-    /**
-     * @return bool
-     */
-    public function hasEntityPath(): bool
-    {
-        return false;
+            return $app;
+        });
     }
 }

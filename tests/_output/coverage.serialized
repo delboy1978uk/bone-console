@@ -1,0 +1,63 @@
+<?php
+$coverage = new SebastianBergmann\CodeCoverage\CodeCoverage;
+$coverage->setData(array (
+  '/var/www/html/vendor/delboy1978uk/bone-console/src/ConsolePackage.php' => 
+  array (
+    16 => 
+    array (
+      0 => 'Barnacle\\Tests\\ConsoleTest::testGetApplicationFromContainer',
+    ),
+    17 => 
+    array (
+      0 => 'Barnacle\\Tests\\ConsoleTest::testGetApplicationFromContainer',
+    ),
+    18 => 
+    array (
+      0 => 'Barnacle\\Tests\\ConsoleTest::testGetApplicationFromContainer',
+    ),
+    20 => 
+    array (
+      0 => 'Barnacle\\Tests\\ConsoleTest::testGetApplicationFromContainer',
+    ),
+    21 => 
+    array (
+      0 => 'Barnacle\\Tests\\ConsoleTest::testGetApplicationFromContainer',
+    ),
+    22 => 
+    array (
+      0 => 'Barnacle\\Tests\\ConsoleTest::testGetApplicationFromContainer',
+    ),
+  ),
+  '/var/www/html/vendor/delboy1978uk/bone-console/src/ConsoleApplication.php' => 
+  array (
+    11 => 
+    array (
+      0 => 'Barnacle\\Tests\\ConsoleTest::testGetApplicationFromContainer',
+    ),
+    22 => NULL,
+  ),
+  '/var/www/html/vendor/delboy1978uk/bone-console/src/CommandRegistrationInterface.php' => 
+  array (
+  ),
+));
+$coverage->setTests(array (
+  'Barnacle\\Tests\\ConsoleTest::testGetApplicationFromContainer' => 
+  array (
+    'size' => 'unknown',
+    'status' => 0,
+  ),
+  'UNCOVERED_FILES_FROM_WHITELIST' => 
+  array (
+    'size' => 'unknown',
+    'status' => -1,
+  ),
+));
+
+$filter = $coverage->filter();
+$filter->setWhitelistedFiles(array (
+  '/var/www/html/vendor/delboy1978uk/bone-console/src/ConsolePackage.php' => true,
+  '/var/www/html/vendor/delboy1978uk/bone-console/src/ConsoleApplication.php' => true,
+  '/var/www/html/vendor/delboy1978uk/bone-console/src/CommandRegistrationInterface.php' => true,
+));
+
+return $coverage;
