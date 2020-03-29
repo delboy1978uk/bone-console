@@ -18,6 +18,7 @@ class ConsoleTest extends Test
     protected function _before()
     {
         $this->container = $c = new Container();
+        $c[ConsoleApplication::class] = new ConsoleApplication();
         $c['consoleCommands'] = [];
         $package = new ConsolePackage();
         $package->addToContainer($c);
