@@ -12,12 +12,8 @@ class ConsolePackage implements RegistrationInterface
      */
     public function addToContainer(Container $c)
     {
-        $c[ConsoleApplication::class] = $c->factory(function(Container $c) {
-            $app = new ConsoleApplication();
-            $consoleCommands = $c->get('consoleCommands');
-            $app->addCommands($consoleCommands);
-
-            return $app;
-        });
+        $app = $c->has(ConsoleApplication::class) ? $c->get(ConsoleApplication::class) : new ConsoleApplication();
+        $consoleCommands = $c->get('consoleCommands');
+        $app->addCommands($consoleCommands);
     }
 }
