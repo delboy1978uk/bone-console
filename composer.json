@@ -9,14 +9,14 @@
         }
     ],
     "require": {
-        "php": ">7.2",
+        "php": ">=7.3",
         "delboy1978uk/barnacle": "^2.3",
         "delboy1978uk/booty": "^1.0",
         "symfony/console": "^5.2.1"
     },
     "require-dev": {
-        "codeception/codeception": "^2.2",
-        "roave/security-advisories": "dev-master"
+        "codeception/codeception": "^4.1",
+        "roave/security-advisories": "dev-latest"
     },
     "bin": [
         "bin/bone"
