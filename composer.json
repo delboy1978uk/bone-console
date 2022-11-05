@@ -12,11 +12,11 @@
         "php": ">=7.3",
         "delboy1978uk/barnacle": "^2.3",
         "delboy1978uk/booty": "^1.0",
-        "symfony/console": "^5.2.1"
+        "symfony/console": "^5.2 || ^6.0"
     },
     "require-dev": {
-        "codeception/codeception": "^4.1",
-        "codeception/module-asserts": "^1.3",
+        "codeception/codeception": "^5.0",
+        "codeception/module-asserts": "^3.0",
         "roave/security-advisories": "dev-latest"
     },
     "bin": [
@@ -29,7 +29,8 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "BoneTest\\": "tests/unit/"
+            "Bone\\Tests\\": "tests/Unit/",
+            "Tests\\": "tests/"
         }
     }
 }

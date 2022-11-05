@@ -1,5 +1,6 @@
 <?php
 
+nano Tests\Support;
 
 /**
  * Inherited Methods

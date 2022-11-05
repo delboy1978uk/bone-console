@@ -1,16 +1,16 @@
 <?php
 
-namespace Barnacle\Tests;
+namespace Bone\Tests;
 
 use Barnacle\Container;
 use Barnacle\Exception\NotFoundException;
 use Bone\Console\ConsoleApplication;
 use Bone\Console\ConsolePackage;
 use Bone\Db\DbPackage;
-use Codeception\TestCase\Test;
+use Codeception\Test\Unit;
 use PDO;
 
-class ConsoleTest extends Test
+class ConsoleTest extends Unit
 {
     /** @var Container */
     protected $container;
