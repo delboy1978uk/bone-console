@@ -5,9 +5,8 @@ $projectRoot = dirname(dirname(dirname(dirname(__DIR__)))) . '';
 chdir($projectRoot);
 
 if (!file_exists('vendor/autoload.php')) {
-    throw new RuntimeException(
-        'Garrrr! Unable t\'load Bone. Run `composer install` or `php composer.phar install`'
-    );
+    $message = 'Garrrr! Unable t\'load Bone. Run `composer install` or `php composer.phar install`';
+    throw new RuntimeException($message);
 }
 
 $composer = require_once 'vendor/autoload.php';
@@ -16,19 +15,18 @@ if (!defined('APPLICATION_PATH')) {
     define('APPLICATION_PATH', $projectRoot . '/');
 }
 
-$dotenv = \Dotenv\Dotenv::createImmutable(APPLICATION_PATH);
+use Bone\Console\ConsoleApplication;
+use Del\Booty\BootyCommand;
+use Dotenv\Dotenv;
+
+$dotenv = Dotenv::createImmutable(APPLICATION_PATH);
 $dotenv->load();
 
-if (!defined('APPLICATION_ENV') && getenv('APPLICATION_ENV'))
-{
+if (!defined('APPLICATION_ENV') && getenv('APPLICATION_ENV'))  {
     define('APPLICATION_ENV', (getenv('APPLICATION_ENV') ?: 'production'));
 }
 
-use Bone\Console\ConsoleApplication;
-use Del\Booty\BootyCommand;
-
 $container = Bone\Application::ahoy()->bootstrap();
-/** @var ConsoleApplication $app */
 $app = $container->get(ConsoleApplication::class);
 $packages = $container->get('packages');
 $booty = new BootyCommand('assets', $packages, $composer);
