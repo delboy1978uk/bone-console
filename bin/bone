@@ -4,11 +4,16 @@
 $projectRoot = dirname(dirname(dirname(dirname(__DIR__)))) . '';
 chdir($projectRoot);
 
+if (!defined('APPLICATION_PATH')) {
+    define('APPLICATION_PATH', dirname(__DIR__) . '/');
+}
 
-if (!defined('APPLICATION_ENV') && getenv('APPLICATION_ENV')) {
-    define('APPLICATION_ENV', (getenv('APPLICATION_ENV')
-        ? getenv('APPLICATION_ENV')
-        : 'production'));
+$dotenv = Dotenv\Dotenv::createImmutable(APPLICATION_PATH);
+$dotenv->load();
+
+if (!defined('APPLICATION_ENV') && getenv('APPLICATION_ENV'))
+{
+    define('APPLICATION_ENV', (getenv('APPLICATION_ENV') ?: 'production'));
 }
 
 if (!file_exists('vendor/autoload.php')) {
