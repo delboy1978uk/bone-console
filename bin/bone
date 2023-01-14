@@ -4,8 +4,16 @@
 $projectRoot = dirname(dirname(dirname(dirname(__DIR__)))) . '';
 chdir($projectRoot);
 
+if (!file_exists('vendor/autoload.php')) {
+    throw new RuntimeException(
+        'Garrrr! Unable t\'load Bone. Run `composer install` or `php composer.phar install`'
+    );
+}
+
+$composer = require_once 'vendor/autoload.php';
+
 if (!defined('APPLICATION_PATH')) {
-    define('APPLICATION_PATH', dirname(__DIR__) . '/');
+    define('APPLICATION_PATH', $projectRoot . '/');
 }
 
 $dotenv = \Dotenv\Dotenv::createImmutable(APPLICATION_PATH);
@@ -15,14 +23,6 @@ if (!defined('APPLICATION_ENV') && getenv('APPLICATION_ENV'))
 {
     define('APPLICATION_ENV', (getenv('APPLICATION_ENV') ?: 'production'));
 }
-
-if (!file_exists('vendor/autoload.php')) {
-    throw new RuntimeException(
-        'Garrrr! Unable t\'load Bone. Run `composer install` or `php composer.phar install`'
-    );
-}
-
-$composer = require_once 'vendor/autoload.php';
 
 use Bone\Console\ConsoleApplication;
 use Del\Booty\BootyCommand;
