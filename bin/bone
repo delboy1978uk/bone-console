@@ -8,7 +8,7 @@ if (!defined('APPLICATION_PATH')) {
     define('APPLICATION_PATH', dirname(__DIR__) . '/');
 }
 
-$dotenv = Dotenv\Dotenv::createImmutable(APPLICATION_PATH);
+$dotenv = \Dotenv\Dotenv::createImmutable(APPLICATION_PATH);
 $dotenv->load();
 
 if (!defined('APPLICATION_ENV') && getenv('APPLICATION_ENV'))

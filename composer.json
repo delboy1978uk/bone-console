@@ -13,7 +13,8 @@
         "delboy1978uk/barnacle": "^2.3",
         "delboy1978uk/booty": "^1.0",
         "symfony/console": "^5.2 || ^6.0",
-        "vlucas/phpdotenv": "^5.5"
+        "vlucas/phpdotenv": "^5.5",
+        "scrutinizer/ocular": "^1.9"
     },
     "require-dev": {
         "codeception/codeception": "^5.0",
