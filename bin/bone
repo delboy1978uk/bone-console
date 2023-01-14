@@ -19,8 +19,11 @@ use Bone\Console\ConsoleApplication;
 use Del\Booty\BootyCommand;
 use Dotenv\Dotenv;
 
-$dotenv = Dotenv::createImmutable(APPLICATION_PATH);
-$dotenv->load();
+try {
+    $dotenv = Dotenv::createImmutable(APPLICATION_PATH);
+    $dotenv->load();
+} catch (Exception $e) {}
+
 
 if (!defined('APPLICATION_ENV') && getenv('APPLICATION_ENV'))  {
     define('APPLICATION_ENV', (getenv('APPLICATION_ENV') ?: 'production'));
