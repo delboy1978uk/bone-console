@@ -9,10 +9,10 @@
         }
     ],
     "require": {
-        "php": ">=7.3",
+        "php": "^8.2",
         "delboy1978uk/barnacle": "^2.3",
         "delboy1978uk/booty": "^1.0",
-        "symfony/console": "^5.2 || ^6.0",
+        "symfony/console": "^5.2 || ^6.0 || ^7.0",
         "vlucas/phpdotenv": "^5.5"
     },
     "require-dev": {

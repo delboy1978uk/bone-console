@@ -6,7 +6,7 @@ use Symfony\Component\Console\Application as SymfonyConsoleApplication;
 
 class ConsoleApplication extends SymfonyConsoleApplication
 {
-    public function getLongVersion()
+    public function getLongVersion(): string
     {
         return "
   {}           {}                                                                   

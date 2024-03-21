@@ -7,10 +7,7 @@ use Barnacle\RegistrationInterface;
 
 class ConsolePackage implements RegistrationInterface
 {
-    /**
-     * @param Container $c
-     */
-    public function addToContainer(Container $c)
+    public function addToContainer(Container $c): void
     {
         $app = $c->has(ConsoleApplication::class) ? $c->get(ConsoleApplication::class) : new ConsoleApplication();
         $consoleCommands = $c->get('consoleCommands');
