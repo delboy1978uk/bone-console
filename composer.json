@@ -18,7 +18,7 @@
     "require-dev": {
         "codeception/codeception": "^5.0",
         "codeception/module-asserts": "^3.0",
-        "roave/security-advisories": "dev-latest",
+        "roave/security-advisories": "dev-latest"
     },
     "bin": [
         "bin/bone"
