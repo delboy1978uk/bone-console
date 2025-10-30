@@ -19,7 +19,6 @@
         "codeception/codeception": "^5.0",
         "codeception/module-asserts": "^3.0",
         "roave/security-advisories": "dev-latest",
-        "scrutinizer/ocular": "^1.9"
     },
     "bin": [
         "bin/bone"

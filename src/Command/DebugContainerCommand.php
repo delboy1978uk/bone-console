@@ -4,33 +4,34 @@ declare(strict_types=1);
 
 namespace Bone\Console\Command;
 
+use Barnacle\Container;
+use Bone\Console\Command;
 use Psr\Container\ContainerInterface;
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Style\SymfonyStyle;
 
 class DebugContainerCommand extends Command
 {
-    public function __construct(private ContainerInterface $container)
-    {
+    public function __construct(
+        private ContainerInterface $container
+    ) {
         parent::__construct('debug:container');
     }
     protected function configure(): void
     {
         $this->setDescription('See config values from the container.');
         $this->setHelp('See config values from the container.');
-        $this->addArgument('key', InputArgument::REQUIRED, 'The config key you wish to debug', false);
+        $this->addArgument('key', InputArgument::OPTIONAL, 'The config key you wish to debug', false);
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $io = new SymfonyStyle($input, $output);
+        $io = $this->getIo($input, $output);
         $key = $input->getArgument('key');
         $io->title('💀Bone container debug');
 
-        if ($this->container->has($key)) {
+        if ($key && $this->container->has($key)) {
             $item = $this->container->get($key);
 
             if (\is_array($item)) {
@@ -38,10 +39,44 @@ class DebugContainerCommand extends Command
             }
 
             return self::SUCCESS;
+        } else if ($key) {
+            $io->error('Key "' . $key . '" does not exist.');
+
+            return self::FAILURE;
         }
 
-        $io->error('Key "' . $key . '" does not exist.');
+        /** @var Container $c */
+        $c = $this->container;
+        $keys = $c->keys();
+        sort($keys);
 
-        return self::FAILURE;
+        foreach ($keys as $name) {
+            $value = $c->get($name);
+            $type = gettype($value);
+            $io->writeln('<fg=yellow;>' .$name . '</> ');
+            $io->writeln($this->getDisplayValue($type, $value));
+            $io->writeln('');
+        }
+
+        return self::SUCCESS;
+    }
+
+    private function getDisplayValue(string $type, mixed $value): string
+    {
+        switch ($type) {
+            case 'boolean':
+                return $value ? 'true' : 'false';
+                break;
+            case 'float':
+            case 'integer':
+            case 'string':
+                return (string) $value;
+                break;
+            case 'array':
+                return json_encode($value, JSON_PRETTY_PRINT);
+                break;
+            case 'object':
+                return 'Object of class ' . \get_class($value);
+        }
     }
 }
