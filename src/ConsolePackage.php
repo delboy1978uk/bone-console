@@ -6,6 +6,7 @@ use Barnacle\Container;
 use Barnacle\RegistrationInterface;
 use Bone\Console\Command\DebugContainerCommand;
 use Bone\Console\Command\PackagesCommand;
+use Bone\Console\Command\PostInstallCommand;
 
 class ConsolePackage implements RegistrationInterface
 {
@@ -15,6 +16,7 @@ class ConsolePackage implements RegistrationInterface
         $consoleCommands = $c->get('consoleCommands');
         $consoleCommands[] = new DebugContainerCommand($c);
         $consoleCommands[] = new PackagesCommand($c->get('packages'));
+        $consoleCommands[] = new PostInstallCommand('packages:post-install');
         $app->addCommands($consoleCommands);
     }
 }
