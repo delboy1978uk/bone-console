@@ -32,11 +32,10 @@ class DebugContainerCommand extends Command
         $io->title('💀Bone container debug');
 
         if ($key && $this->container->has($key)) {
-            $item = $this->container->get($key);
-
-            if (\is_array($item)) {
-                $io->tree($item);
-            }
+            $value = $this->container->get($key);
+            $type = gettype($value);
+            $io->writeln('<fg=yellow;>' .$key . '</> ');
+            $io->writeln($this->getDisplayValue($type, $value));
 
             return self::SUCCESS;
         } else if ($key) {

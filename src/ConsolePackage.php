@@ -5,6 +5,7 @@ namespace Bone\Console;
 use Barnacle\Container;
 use Barnacle\RegistrationInterface;
 use Bone\Console\Command\DebugContainerCommand;
+use Bone\Console\Command\PackagesCommand;
 
 class ConsolePackage implements RegistrationInterface
 {
@@ -13,6 +14,7 @@ class ConsolePackage implements RegistrationInterface
         $app = $c->has(ConsoleApplication::class) ? $c->get(ConsoleApplication::class) : new ConsoleApplication();
         $consoleCommands = $c->get('consoleCommands');
         $consoleCommands[] = new DebugContainerCommand($c);
+        $consoleCommands[] = new PackagesCommand($c->get('packages'));
         $app->addCommands($consoleCommands);
     }
 }
