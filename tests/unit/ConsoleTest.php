@@ -20,6 +20,7 @@ class ConsoleTest extends Unit
         $this->container = $c = new Container();
         $c[ConsoleApplication::class] = new ConsoleApplication();
         $c['consoleCommands'] = [];
+        $c['packages'] = [];
         $package = new ConsolePackage();
         $package->addToContainer($c);
     }
