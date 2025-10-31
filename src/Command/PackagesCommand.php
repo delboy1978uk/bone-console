@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Bone\Console\Command;
 
-use _PHPStan_b22655c3f\Symfony\Component\Console\Style\SymfonyStyle;
 use Barnacle\Container;
 use Bone\Console\Command;
 use Bone\Contracts\Container\DefaultSettingsProviderInterface;
@@ -14,6 +13,7 @@ use Psr\Container\ContainerInterface;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Process\Process;
 
 class PackagesCommand extends Command
