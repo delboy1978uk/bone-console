@@ -4,8 +4,12 @@ declare(strict_types=1);
 
 namespace Bone\Console\Command;
 
+use _PHPStan_b22655c3f\Symfony\Component\Console\Style\SymfonyStyle;
 use Barnacle\Container;
 use Bone\Console\Command;
+use Bone\Contracts\Container\DefaultSettingsProviderInterface;
+use Bone\Contracts\Container\EntityRegistrationInterface;
+use Bone\Contracts\Container\FixtureProviderInterface;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -106,10 +110,12 @@ class PackagesCommand extends Command
         $availablePackages = [];
         $installedPackages = [];
         $choices = [];
+        $installed = [];
 
         foreach ($this->packages as $name => $info) {
             if (in_array($info['class'], $this->installedPackages)) {
                 $installedPackages[] = [$name, $info['description']];
+                $installed[] = $name;
             } else {
                 $availablePackages[] = [$name, $info['description']];
                 $choices[] = $name;
@@ -117,13 +123,30 @@ class PackagesCommand extends Command
         }
 
         if ($package && in_array($package, $choices)) {
-            $io->writeln('Installing package: '.$package);
+            $io->writeln('Installing package: ' . $package);
             $process = new Process(['composer', 'require', $package]);
             $process->enableOutput();
             $process->run(function ($type, $buffer) use ($io): void {
                 $io->write($buffer);
             });
+
+            if ($process->isSuccessful()) {
+                $io->success('Successfully installed package: ' . $package);
+                $packageName = $this->packages[$package]['class'];
+                $this->postInstall($io, $packageName);
+            } else {
+                $io->error('Failed installing package: ' . $package);
+
+                return self::FAILURE;
+            }
+
         } else {
+            if ($package && in_array($package, $installed)) {
+                $io->warning('Package ' . $package . ' is already in `config/packages.php`');
+
+                return self::SUCCESS;
+            }
+
             if (count($installedPackages) > 0) {
                 $io->writeln('Installed packages:');
                 $io->table(['Name', 'Description'], $installedPackages);
@@ -134,5 +157,51 @@ class PackagesCommand extends Command
         }
 
         return self::SUCCESS;
+    }
+
+    private function postInstall(SymfonyStyle $io, string $packageName): void
+    {
+        $package = new $packageName();
+
+        if ($package instanceof DefaultSettingsProviderInterface) {
+            $path = 'config/' . $package->getSettingsFileName() . '.php';
+
+            if (!file_exists($path)) {
+                $contents = $package->getSettingsFileContents();
+                file_put_contents($path, $contents);
+
+                $io->info('Settings saved to ' . $path);
+            }
+        }
+
+        if ($package instanceof EntityRegistrationInterface) {
+            $io->writeln('Generating database migration for ' . $package . '.');
+            $process = new Process(['vendor/bin/bone', 'm:diff']);
+            $process->enableOutput();
+            $process->run(function ($type, $buffer) use ($io): void {
+                $io->write($buffer);
+            });
+            $io->writeln('Running migrations...');
+            $process = new Process(['vendor/bin/bone', 'm:migrate']);
+            $process->enableOutput();
+            $process->run(function ($type, $buffer) use ($io): void {
+                $io->write($buffer);
+            });
+            $io->writeln('Generating Proxies...');
+            $process = new Process(['vendor/bin/bone', 'm:generate-proxies']);
+            $process->enableOutput();
+            $process->run(function ($type, $buffer) use ($io): void {
+                $io->write($buffer);
+            });
+        }
+
+        if ($package instanceof FixtureProviderInterface) {
+            $io->writeln('Loading fixtures... @todo');
+//            $process = new Process(['vendor/bin/bone', 'm:generate-proxies']);
+//            $process->enableOutput();
+//            $process->run(function ($type, $buffer) use ($io): void {
+//                $io->write($buffer);
+//            });
+        }
     }
 }
