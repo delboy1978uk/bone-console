@@ -101,8 +101,9 @@ class PackagesCommand extends Command
     {
         $this->setDescription('Install official Bone Framework packages.');
         $this->setHelp('Install official Bone Framework packages.');
-        $this->addArgument('package', InputArgument::OPTIONAL, 'Package name.');
         $this->addOption('remove', 'r', InputOption::VALUE_NONE, 'Removes package.');
+        $this->addOption('disable', 'd', InputOption::VALUE_NONE, 'Disables a package without uninstalling it.');
+        $this->addArgument('package', InputArgument::OPTIONAL, 'Package name.');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -112,8 +113,13 @@ class PackagesCommand extends Command
             $io->title('💀 Bone package installer');
             $package = $input->getArgument('package');
             $remove = $input->getOption('remove');
+            $disable = $input->getOption('disable');
 
             if ($remove) {
+                return $this->removePackage($io, $package);
+            }
+
+            if ($disable) {
                 return $this->disablePackage($io, $package);
             }
 
@@ -200,6 +206,18 @@ class PackagesCommand extends Command
         file_put_contents('config/packages.php', "<?php\n\nreturn [\n    'packages' => " . $array . "\n];");
     }
 
+    private function removePackage(SymfonyStyle $io, string $package): int
+    {
+        $process = new Process(['composer', 'remove', $package]);
+        $process->enableOutput();
+        $process->run(function ($type, $buffer) use ($io): void {
+            $io->write($buffer);
+        });
+        $this->disablePackage($io, $package);
+
+        return self::SUCCESS;
+    }
+
     private function disablePackage(SymfonyStyle $io, string $package): int
     {
         $packageClass = $this->packages[$package]['class'];
@@ -212,6 +230,7 @@ class PackagesCommand extends Command
         }
 
         $this->exportArray($packages);
+        $io->success('Successfully disabled package: ' . $package);
 
         return self::SUCCESS;
     }
