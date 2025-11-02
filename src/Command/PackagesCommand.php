@@ -18,7 +18,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Process\Process;
 
-class PackagesCommand extends Command
+class PackagesCommand extends AbstractPackageCommand
 {
     private array $packages = [
         'boneframework/debug-bar' => [
@@ -103,7 +103,8 @@ class PackagesCommand extends Command
         $this->setHelp('Install official Bone Framework packages.');
         $this->addOption('remove', 'r', InputOption::VALUE_NONE, 'Removes package.');
         $this->addOption('disable', 'd', InputOption::VALUE_NONE, 'Disables a package without uninstalling it.');
-        $this->addArgument('package', InputArgument::OPTIONAL, 'Package name.');
+        $this->addOption('enable', 'e', InputOption::VALUE_NONE, 'Re-enable a package.');
+        $this->addArgument('package', InputArgument::REQUIRED, 'Package name.');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -114,6 +115,7 @@ class PackagesCommand extends Command
             $package = $input->getArgument('package');
             $remove = $input->getOption('remove');
             $disable = $input->getOption('disable');
+            $enable = $input->getOption('enable');
 
             if ($remove) {
                 return $this->removePackage($io, $package);
@@ -121,6 +123,12 @@ class PackagesCommand extends Command
 
             if ($disable) {
                 return $this->disablePackage($io, $package);
+            }
+
+            if ($enable) {
+                $packageName = $this->packages[$package]['class'];
+
+                return $this->enablePackage($io, $packageName);
             }
 
             $availablePackages = [];
@@ -140,18 +148,14 @@ class PackagesCommand extends Command
 
             if ($package && in_array($package, $choices)) {
                 $io->writeln('Installing package: ' . $package);
-                $process = new Process(['composer', 'require', $package]);
-                $process->enableOutput();
-                $process->run(function ($type, $buffer) use ($io): void {
-                    $io->write($buffer);
-                });
+                $process = $this->runProcess($io, ['composer', 'require', $package]);
 
                 if ($process->isSuccessful()) {
                     $io->success('Successfully installed package: ' . $package);
                     $packageName = $this->packages[$package]['class'];
                     $io->info('Enabling package in `config/packages.php`');
-                    $this->enablePackage($packageName);
                     $this->postInstall($io, $packageName);
+                    $io->success('Successfully installed and configured package: ' . $packageName);
                 } else {
                     $io->error('Failed installing package: ' . $package);
 
@@ -181,39 +185,17 @@ class PackagesCommand extends Command
         }
     }
 
-    private function enablePackage(string $package): void
-    {
-        $packages = include 'config/packages.php';
-        $appPackage = array_pop($packages['packages']);
-
-        if (!in_array($package, $packages['packages'])) {
-            $packages['packages'][] = $package;
-        }
-
-        $packages['packages'][] = $appPackage;
-        $this->exportArray($packages);
-    }
-
-    private function exportArray(array $packages): void
-    {
-        $array = var_export($packages['packages'], true);
-        $array = str_replace('array (', '[', $array);
-        $array = str_replace(')', ']', $array);
-        $array = preg_replace('#\s\s\d+\s=>\s\'#', '        ', $array);
-        $array = str_replace('\',', '::class,', $array);
-        $array = str_replace('\\\\', '\\', $array);
-        $array = str_replace("\n]", "\n    ]", $array);
-        file_put_contents('config/packages.php', "<?php\n\nreturn [\n    'packages' => " . $array . "\n];");
-    }
-
     private function removePackage(SymfonyStyle $io, string $package): int
     {
-        $process = new Process(['composer', 'remove', $package]);
-        $process->enableOutput();
-        $process->run(function ($type, $buffer) use ($io): void {
-            $io->write($buffer);
-        });
+        $this->runProcess($io, ['composer', 'remove', $package]);
         $this->disablePackage($io, $package);
+
+        return self::SUCCESS;
+    }
+
+    private function enablePackage(SymfonyStyle $io, string $package): int
+    {
+        $this->runProcess($io, ['vendor/bin/bone', 'packages:post-install', $package, '--enable-only']);
 
         return self::SUCCESS;
     }
@@ -238,10 +220,6 @@ class PackagesCommand extends Command
     private function postInstall(SymfonyStyle $io, string $package): void
     {
         $io->writeln('Running post install tasks for ' . $package);
-        $process = new Process(['vendor/bin/bone', 'packages:post-install', $package]);
-        $process->enableOutput();
-        $process->run(function ($type, $buffer) use ($io): void {
-            $io->write($buffer);
-        });
+        $this->runProcess($io, ['vendor/bin/bone', 'packages:post-install', $package]);
     }
 }

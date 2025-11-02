@@ -8,6 +8,7 @@ use Symfony\Component\Console\Command\Command as BaseCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\Process\Process;
 
 class Command extends BaseCommand
 {
@@ -25,5 +26,16 @@ class Command extends BaseCommand
         }
 
         return $this->io;
+    }
+
+    public function runProcess(SymfonyStyle $io, array $args): Process
+    {
+        $process = new Process($args);
+        $process->enableOutput();
+        $process->run(function ($type, $buffer) use ($io): void {
+            $io->write($buffer);
+        });
+
+        return $process;
     }
 }
