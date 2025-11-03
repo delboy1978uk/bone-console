@@ -65,6 +65,10 @@ class PostInstallCommand extends AbstractPackageCommand
                         $io->warning('Settings already exist in ' . $configFile . 'ignoring.');
                     }
                 }
+
+                if ($instance instanceof PostInstallProviderInterface) {
+                    $instance->postInstall($this, $io);
+                }
             }
 
             if (class_exists('Bone\BoneDoctrine\BoneDoctrinePackage')) {
@@ -78,19 +82,17 @@ class PostInstallCommand extends AbstractPackageCommand
                 $this->runProcess($io, ['vendor/bin/bone', 'm:generate-proxies']);
             }
 
-            if ($instance instanceof FixtureProviderInterface) {
-                $io->writeln('Loading fixtures...');
-                $this->runProcess($io, ['vendor/bin/bone', 'm:vendor-fixtures', '--package=' . $package]);
+            foreach ($packages as $package) {
+                $instance = new $package();
+
+                if ($instance instanceof FixtureProviderInterface) {
+                    $io->writeln('Loading fixtures...');
+                    $this->runProcess($io, ['vendor/bin/bone', 'm:vendor-fixtures', '--package=' . $package]);
+                }
             }
 
             $io->writeln('Deploying assets...');
             $this->runProcess($io, ['vendor/bin/bone', 'assets:deploy']);
-
-            foreach ($packages as $package) {
-                if ($instance instanceof PostInstallProviderInterface) {
-                    $instance->postInstall($this, $io);
-                }
-            }
 
             return self::SUCCESS;
         } catch (\Throwable $e) {
