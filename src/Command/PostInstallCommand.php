@@ -104,6 +104,7 @@ class PostInstallCommand extends AbstractPackageCommand
         $packages = include 'config/packages.php';
         $appPackage = array_pop($packages['packages']);
         $instance = new $package();
+        $added = [];
 
         if ($instance instanceof DefaultSettingsProviderInterface) {
             $dependencies = $instance->getRequiredPackages();
@@ -111,15 +112,17 @@ class PostInstallCommand extends AbstractPackageCommand
             foreach ($dependencies as $dependency) {
                 if (!in_array($dependency, $packages['packages'])) {
                     $packages['packages'][] = $dependency;
+                    $added[] = $dependency;
                 }
             }
         } else if (!in_array($package, $packages['packages'])) {
             $packages['packages'][] = $package;
+            $added[] = $package;
         }
 
         $packages['packages'][] = $appPackage;
         $this->exportArray($packages);
 
-        return $packages['packages'];
+        return $added;
     }
 }
