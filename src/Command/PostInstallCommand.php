@@ -11,6 +11,7 @@ use Bone\Contracts\Container\DefaultSettingsProviderInterface;
 use Bone\Contracts\Container\DependentPackagesProviderInterface;
 use Bone\Contracts\Container\EntityRegistrationInterface;
 use Bone\Contracts\Container\FixtureProviderInterface;
+use Bone\Contracts\Container\PostFixturesProviderInterface;
 use Bone\Contracts\Container\PostInstallProviderInterface;
 use Composer\Autoload\ClassLoader;
 use Psr\Container\ContainerInterface;
@@ -88,6 +89,15 @@ class PostInstallCommand extends AbstractPackageCommand
                 if ($instance instanceof FixtureProviderInterface) {
                     $io->writeln('Loading fixtures...');
                     $this->runProcess($io, ['vendor/bin/bone', 'm:vendor-fixtures', '--package=' . $package]);
+                }
+            }
+
+            foreach ($packages as $package) {
+                $instance = new $package();
+
+                if ($instance instanceof PostFixturesProviderInterface) {
+                    $io->writeln('Performing post fixture tasks');
+                    $instance->postFixtures($this, $io);
                 }
             }
 
