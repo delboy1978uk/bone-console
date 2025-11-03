@@ -76,6 +76,13 @@ class PostInstallCommand extends AbstractPackageCommand
                 $this->runProcess($io, ['vendor/bin/bone', 'm:vendor-fixtures', '--package=' . $package]);
             }
 
+            $io->writeln('Deploying assets...');
+            $this->runProcess($io, ['vendor/bin/bone', 'assets:deplpoy']);
+
+            if ($instance instanceof DefaultSettingsProviderInterface) {
+                $instance->postInstall($this, $io);
+            }
+
             return self::SUCCESS;
         } catch (\Throwable $e) {
             $io->error([$e->getMessage(), $e->getFile() . ':' . $e->getLine()]);
