@@ -43,25 +43,30 @@ class PostInstallCommand extends AbstractPackageCommand
                 return self::SUCCESS;
             }
 
-            $this->enablePackage($package);
-            $io->info($package);
-            $instance = new $package();
+            $packages = $this->enablePackage($package);
 
-            if ($instance instanceof DefaultSettingsProviderInterface) {
-                $path = realpath($instance->getSettingsFileName());
+            foreach ($packages as $package) {
+                $io->info($package);
+                $instance = new $package();
 
-                if (!file_exists($path)) {
-                    $contents = file_get_contents($path);
-                    file_put_contents($path, $contents);
+                if ($instance instanceof DefaultSettingsProviderInterface) {
+                    $path = realpath($instance->getSettingsFileName());
+                    $fileName = end(explode('/', $path));
+                    $configFile = 'config/' . $fileName;
 
-                    $io->info('Settings saved to ' . $path . ' successfully.');
-                } else {
-                    $io->warning('Settings already exist in ' . $path . 'ignoring.');
+                    if (!file_exists($configFile)) {
+                        $contents = file_get_contents($path);
+                        file_put_contents($configFile, $contents);
+
+                        $io->info('Settings saved to ' . $configFile . ' successfully.');
+                    } else {
+                        $io->warning('Settings already exist in ' . $configFile . 'ignoring.');
+                    }
                 }
             }
 
             if (class_exists('Bone\BoneDoctrine\BoneDoctrinePackage')) {
-                $io->writeln('Generating database migration for ' . $package . '.');
+                $io->writeln('Generating database migrations.');
                 $this->runProcess($io, ['vendor/bin/bone', 'm:diff']);
 
                 $io->writeln('Running migrations...');
@@ -77,10 +82,12 @@ class PostInstallCommand extends AbstractPackageCommand
             }
 
             $io->writeln('Deploying assets...');
-            $this->runProcess($io, ['vendor/bin/bone', 'assets:deplpoy']);
+            $this->runProcess($io, ['vendor/bin/bone', 'assets:deploy']);
 
-            if ($instance instanceof DefaultSettingsProviderInterface) {
-                $instance->postInstall($this, $io);
+            foreach ($packages as $package) {
+                if ($instance instanceof DefaultSettingsProviderInterface) {
+                    $instance->postInstall($this, $io);
+                }
             }
 
             return self::SUCCESS;
@@ -92,7 +99,7 @@ class PostInstallCommand extends AbstractPackageCommand
     }
 
 
-    private function enablePackage(string $package): void
+    private function enablePackage(string $package): array
     {
         $packages = include 'config/packages.php';
         $appPackage = array_pop($packages['packages']);
@@ -112,5 +119,7 @@ class PostInstallCommand extends AbstractPackageCommand
 
         $packages['packages'][] = $appPackage;
         $this->exportArray($packages);
+
+        return $packages['packages'];
     }
 }
