@@ -104,7 +104,7 @@ class PackagesCommand extends AbstractPackageCommand
         $this->addOption('remove', 'r', InputOption::VALUE_NONE, 'Removes package.');
         $this->addOption('disable', 'd', InputOption::VALUE_NONE, 'Disables a package without uninstalling it.');
         $this->addOption('enable', 'e', InputOption::VALUE_NONE, 'Re-enable a package.');
-        $this->addArgument('package', InputArgument::REQUIRED, 'Package name.');
+        $this->addArgument('package', InputArgument::OPTIONAL, 'Package name.');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int

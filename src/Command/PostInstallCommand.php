@@ -8,8 +8,10 @@ namespace Bone\Console\Command;
 use Barnacle\Container;
 use Bone\Console\Command;
 use Bone\Contracts\Container\DefaultSettingsProviderInterface;
+use Bone\Contracts\Container\DependentPackagesProviderInterface;
 use Bone\Contracts\Container\EntityRegistrationInterface;
 use Bone\Contracts\Container\FixtureProviderInterface;
+use Bone\Contracts\Container\PostInstallProviderInterface;
 use Composer\Autoload\ClassLoader;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\Console\Input\InputArgument;
@@ -85,7 +87,7 @@ class PostInstallCommand extends AbstractPackageCommand
             $this->runProcess($io, ['vendor/bin/bone', 'assets:deploy']);
 
             foreach ($packages as $package) {
-                if ($instance instanceof DefaultSettingsProviderInterface) {
+                if ($instance instanceof PostInstallProviderInterface) {
                     $instance->postInstall($this, $io);
                 }
             }
@@ -106,7 +108,7 @@ class PostInstallCommand extends AbstractPackageCommand
         $instance = new $package();
         $added = [];
 
-        if ($instance instanceof DefaultSettingsProviderInterface) {
+        if ($instance instanceof DependentPackagesProviderInterface) {
             $dependencies = $instance->getRequiredPackages();
 
             foreach ($dependencies as $dependency) {
