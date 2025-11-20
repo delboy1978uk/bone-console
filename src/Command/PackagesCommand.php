@@ -25,6 +25,14 @@ class PackagesCommand extends AbstractPackageCommand
             'class' => 'Bone\DebugBar\DebugBarPackage',
             'description' => 'PHP Debug toolbar',
         ],
+        'boneframework/generator' => [
+            'class' => 'Bone\Generator\GeneratorPackage',
+            'description' => 'Generate entities and endpoints, API docs and tests',
+        ],
+        'boneframework/native-api' => [
+            'class' => 'Bone\NativeApi\NativeApiPackage',
+            'description' => 'Full backend OAuth2 API.',
+        ],
         'delboy1978uk/bone-address' => [
             'class' => '',
             'description' => 'Address database and management.',
